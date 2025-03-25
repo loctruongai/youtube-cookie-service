@@ -1,0 +1,12 @@
+{
+  "name": "youtube-cookie-service",
+  "version": "1.0.0",
+  "description": "Service tạo cookies YouTube tự động",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "puppeteer": "^21.3.8"
+  }
+}
