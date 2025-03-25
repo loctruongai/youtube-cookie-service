@@ -1,34 +1,21 @@
-FROM node:18-slim
+FROM node:18
 
-# Cài Chromium và dependencies
+# Cài thêm Chrome & các thư viện cần thiết
 RUN apt-get update && apt-get install -y \
-    chromium \
-    ca-certificates \
-    fonts-liberation \
-    libappindicator3-1 \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libcups2 \
-    libdbus-1-3 \
-    libgdk-pixbuf2.0-0 \
-    libnspr4 \
-    libnss3 \
-    libx11-xcb1 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxrandr2 \
-    xdg-utils \
-    wget \
- && apt-get clean && rm -rf /var/lib/apt/lists/*
+    wget gnupg unzip ca-certificates fonts-liberation libappindicator3-1 libasound2 libatk-bridge2.0-0 \
+    libnspr4 libnss3 libxss1 lsb-release xdg-utils libgbm-dev libu2f-udev libvulkan1 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Tạo thư mục code
+# Cài Chrome
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+    dpkg -i google-chrome-stable_current_amd64.deb || apt-get install -fy && \
+    rm google-chrome-stable_current_amd64.deb
+
 WORKDIR /app
 
-# Copy file cần thiết
 COPY package*.json ./
 RUN npm install
+
 COPY . .
 
-# Mặc định chạy file main.js
-CMD ["node", "main.js"]
+CMD ["node", "index.js"]
