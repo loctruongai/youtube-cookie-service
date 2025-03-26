@@ -1,19 +1,27 @@
-const express = require("express");
-const fs = require("fs");
-const path = require("path");
-
+const express = require('express');
+const fs = require('fs');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = process.env.PORT || 10000;
 
-app.get("/youtube_cookies.txt", (req, res) => {
-  const filePath = path.join(__dirname, "youtube_cookies.txt");
-  if (fs.existsSync(filePath)) {
-    res.download(filePath);
-  } else {
-    res.status(404).send("Cookies file not found.");
-  }
+app.use(express.text({ type: '*/*' }));
+
+// Route hiện tại (ví dụ /youtube_cookies.txt)
+app.get('/youtube_cookies.txt', (req, res) => {
+  res.sendFile(__dirname + '/youtube_cookies.txt');
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+// ✅ Route mới để nhận POST và cập nhật file
+app.post('/update', (req, res) => {
+  fs.writeFile(__dirname + '/youtube_cookies.txt', req.body, (err) => {
+    if (err) {
+      console.error('❌ Failed to write cookies:', err);
+      return res.status(500).send('Failed to update cookies');
+    }
+    console.log('✅ Cookies updated successfully');
+    res.send('Cookies updated successfully');
+  });
+});
+
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
 });
