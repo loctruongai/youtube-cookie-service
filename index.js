@@ -3,23 +3,23 @@ const fs = require('fs');
 const app = express();
 const port = process.env.PORT || 10000;
 
-app.use(express.text({ type: '*/*' }));
+app.use(express.text());
 
-// Route hiện tại (ví dụ /youtube_cookies.txt)
 app.get('/youtube_cookies.txt', (req, res) => {
-  res.sendFile(__dirname + '/youtube_cookies.txt');
+  const cookiePath = './youtube_cookies.txt';
+  if (fs.existsSync(cookiePath)) {
+    const content = fs.readFileSync(cookiePath, 'utf8');
+    res.setHeader('Content-Type', 'text/plain');
+    res.send(content);
+  } else {
+    res.status(404).send('No cookies file found.');
+  }
 });
 
-// ✅ Route mới để nhận POST và cập nhật file
-app.post('/update', (req, res) => {
-  fs.writeFile(__dirname + '/youtube_cookies.txt', req.body, (err) => {
-    if (err) {
-      console.error('❌ Failed to write cookies:', err);
-      return res.status(500).send('Failed to update cookies');
-    }
-    console.log('✅ Cookies updated successfully');
-    res.send('Cookies updated successfully');
-  });
+app.post('/youtube_cookies.txt', (req, res) => {
+  const content = req.body;
+  fs.writeFileSync('./youtube_cookies.txt', content);
+  res.send('✅ Cookies updated successfully');
 });
 
 app.listen(port, () => {
